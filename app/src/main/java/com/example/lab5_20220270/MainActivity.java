@@ -1,24 +1,79 @@
 package com.example.lab5_20220270;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.lab5_20220270.databinding.ActivityMainBinding;
+import com.example.lab5_20220270.storage.PreferencesManager;
+
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
+    private ActivityMainBinding binding;
+    private PreferencesManager prefs;
+    private final String PROFILE_FILE = "profile.jpg";
+
+    private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) saveProfileImage(uri);
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        prefs = new PreferencesManager(this);
+
+        binding.textGreeting.setText("¡Hola " + prefs.getUserName() + "!");
+        binding.textMotivation.setText(prefs.getMotivationMessage());
+
+        loadProfileImageIfExists();
+
+        binding.imageProfile.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+
+        binding.buttonViewCourses.setOnClickListener(v -> startActivity(new Intent(this, CoursesActivity.class)));
+        binding.buttonSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.textGreeting.setText("¡Hola " + prefs.getUserName() + "!");
+        binding.textMotivation.setText(prefs.getMotivationMessage());
+    }
+
+    private void saveProfileImage(Uri uri) {
+        try (InputStream is = getContentResolver().openInputStream(uri);
+             FileOutputStream fos = openFileOutput(PROFILE_FILE, MODE_PRIVATE)) {
+            byte[] buffer = new byte[8192];
+            int len;
+            while ((len = is.read(buffer)) != -1) fos.write(buffer, 0, len);
+            loadProfileImageIfExists();
+            Toast.makeText(this, "Imagen guardada", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error guardando imagen", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadProfileImageIfExists() {
+        try (InputStream is = openFileInput(PROFILE_FILE)) {
+            Bitmap bmp = BitmapFactory.decodeStream(is);
+            if (bmp != null) binding.imageProfile.setImageBitmap(bmp);
+        } catch (Exception ignored) {
+        }
     }
 }
