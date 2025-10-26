@@ -40,7 +40,16 @@ public class CourseReminderWorker extends Worker {
         else if ("Electivo".equalsIgnoreCase(type)) channel = NotificationHelper.CHANNEL_ELECTIVE;
         else if ("Otro".equalsIgnoreCase(type)) channel = NotificationHelper.CHANNEL_OTHER;
 
-        NotificationHelper.sendNotification(getApplicationContext(), channel, (int) System.currentTimeMillis(), courseName, action, R.drawable.ic_launcher_foreground);
+        // Use a stable notification id per course so each new reminder replaces the previous one
+        int notificationId;
+        if (courseId != null) {
+            notificationId = Math.abs(courseId.hashCode());
+            if (notificationId == Integer.MIN_VALUE) notificationId = Math.abs(notificationId + 1); // avoid MIN_VALUE edge
+        } else {
+            notificationId = (int) (System.currentTimeMillis() & 0x7fffffff);
+        }
+
+        NotificationHelper.sendNotification(getApplicationContext(), channel, notificationId, courseName, action, R.drawable.ic_launcher_foreground);
 
         long addMillis = 0L;
         if ("MINUTES".equalsIgnoreCase(freqUnit)) {
