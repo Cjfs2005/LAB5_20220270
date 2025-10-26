@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.Manifest;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -29,6 +31,15 @@ public class MainActivity extends AppCompatActivity {
             }
     );
 
+    private final ActivityResultLauncher<String> requestNotificationPermission = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            granted -> {
+                if (!granted) {
+                    Toast.makeText(this, "Permiso de notificaciones no concedido. Algunas funciones podrán no mostrarse.", Toast.LENGTH_LONG).show();
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         prefs = new PreferencesManager(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
 
         binding.textGreeting.setText("¡Hola " + prefs.getUserName() + "!");
         binding.textMotivation.setText(prefs.getMotivationMessage());
