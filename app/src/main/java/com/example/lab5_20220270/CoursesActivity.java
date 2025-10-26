@@ -58,6 +58,17 @@ public class CoursesActivity extends AppCompatActivity {
 
         viewModel.getCourses().observe(this, courses -> adapter.setList(courses));
 
+        // Show empty view when list is empty
+        viewModel.getCourses().observe(this, courses -> {
+            if (courses == null || courses.isEmpty()) {
+                binding.textEmpty.setVisibility(android.view.View.VISIBLE);
+                binding.recyclerViewCourses.setVisibility(android.view.View.GONE);
+            } else {
+                binding.textEmpty.setVisibility(android.view.View.GONE);
+                binding.recyclerViewCourses.setVisibility(android.view.View.VISIBLE);
+            }
+        });
+
         binding.fabAddCourse.setOnClickListener(v -> {
             Intent i = new Intent(CoursesActivity.this, CourseCreateActivity.class);
             startActivity(i);

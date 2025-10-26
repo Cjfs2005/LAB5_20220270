@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.lab5_20220270.R;
 import com.example.lab5_20220270.model.Course;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.List;
 
 public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.CourseViewHolder> {
@@ -45,9 +46,12 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.CourseVi
         Course c = list.get(position);
         holder.textCourseName.setText(c.getName());
         holder.textCourseType.setText(c.getType());
-        String freq = "Cada " + c.getFrequencyValue() + " " + ("HOURS".equals(c.getFrequencyUnit())? "horas" : "días");
+        String freqUnit = "HOURS".equals(c.getFrequencyUnit()) ? "horas" : "días";
+        String freq = "Frecuencia: Cada " + c.getFrequencyValue() + " " + freqUnit;
         holder.textFrequency.setText(freq);
-        String next = "Próx: " + DateFormat.getDateTimeInstance().format(c.getNextSessionMillis());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        String next = "Próxima sesión: " + sdf.format(c.getNextSessionMillis());
         holder.textNextSession.setText(next);
         holder.itemView.setOnClickListener(v -> listener.onItemClick(c));
         holder.btnDelete.setOnClickListener(v -> listener.onItemDelete(c));
