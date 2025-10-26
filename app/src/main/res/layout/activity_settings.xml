@@ -22,30 +22,51 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <EditText
-                android:id="@+id/editTextUserName"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nombre" />
+                android:hint="Nombre">
 
-            <EditText
-                android:id="@+id/editTextMotivation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Mensaje motivacional" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <EditText
-                android:id="@+id/editTextMotivationInterval"
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:hint="Intervalo (horas)" />
+                android:hint="Mensaje motivacional"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMotivation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Intervalo (horas)"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMotivationInterval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/buttonSaveSettings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Guardar" />
+                android:text="Guardar"
+                android:layout_marginTop="16dp" />
 
         </LinearLayout>
 

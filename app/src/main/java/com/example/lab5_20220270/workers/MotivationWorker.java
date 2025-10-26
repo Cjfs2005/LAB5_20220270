@@ -27,10 +27,7 @@ public class MotivationWorker extends Worker {
 
     PreferencesManager prefs = new PreferencesManager(getApplicationContext());
     int interval = prefs.getMotivationIntervalHours();
-    long addMillis;
-    boolean isDebug = (getApplicationContext().getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-    if (isDebug) addMillis = java.util.concurrent.TimeUnit.MINUTES.toMillis(interval);
-    else addMillis = java.util.concurrent.TimeUnit.HOURS.toMillis(interval);
+    long addMillis = java.util.concurrent.TimeUnit.HOURS.toMillis(interval);
 
     androidx.work.Data nextData = new androidx.work.Data.Builder()
         .putString("message", prefs.getMotivationMessage())

@@ -12,13 +12,7 @@ public class App extends Application {
         PreferencesManager prefs = new PreferencesManager(this);
 
         int interval = prefs.getMotivationIntervalHours();
-        long delayMillis;
-        boolean isDebug = (getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        if (isDebug) {
-            delayMillis = java.util.concurrent.TimeUnit.MINUTES.toMillis(interval);
-        } else {
-            delayMillis = java.util.concurrent.TimeUnit.HOURS.toMillis(interval);
-        }
+        long delayMillis = java.util.concurrent.TimeUnit.HOURS.toMillis(interval);
 
         androidx.work.Data data = new androidx.work.Data.Builder()
                 .putString("message", prefs.getMotivationMessage())
