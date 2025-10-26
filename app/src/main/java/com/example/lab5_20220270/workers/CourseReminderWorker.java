@@ -13,6 +13,11 @@ import java.util.concurrent.TimeUnit;
 
 import com.example.lab5_20220270.NotificationHelper;
 import com.example.lab5_20220270.R;
+import com.example.lab5_20220270.storage.PreferencesManager;
+import com.example.lab5_20220270.model.Course;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class CourseReminderWorker extends Worker {
 
@@ -25,14 +30,28 @@ public class CourseReminderWorker extends Worker {
     public Result doWork() {
     Data input = getInputData();
     String courseId = input.getString("course_id");
-    String courseName = input.getString("course_name");
+
+    // Load persisted course if available to use its stored nextSessionMillis
+    PreferencesManager prefs = new PreferencesManager(getApplicationContext());
+    List<Course> courses = prefs.getCourses();
+    Course target = null;
+    if (courses != null) {
+        for (Course cc : courses) {
+            if (cc.getId().equals(courseId)) {
+                target = cc;
+                break;
+            }
+        }
+    }
+
+    String courseName = (target != null) ? target.getName() : input.getString("course_name");
     if (courseName == null) courseName = "Mi curso";
-    String action = input.getString("action");
+    String action = (target != null) ? target.getActionSuggestion() : input.getString("action");
     if (action == null) action = "Revisar apuntes";
-    String type = input.getString("type");
+    String type = (target != null) ? target.getType() : input.getString("type");
     if (type == null) type = "Teórico";
-    int freqValue = input.getInt("frequency_value", 24);
-    String freqUnit = input.getString("frequency_unit");
+    int freqValue = (target != null) ? target.getFrequencyValue() : input.getInt("frequency_value", 24);
+    String freqUnit = (target != null) ? target.getFrequencyUnit() : input.getString("frequency_unit");
     if (freqUnit == null) freqUnit = "HOURS";
 
         String channel = NotificationHelper.CHANNEL_THEORETICAL;
@@ -51,15 +70,33 @@ public class CourseReminderWorker extends Worker {
         NotificationHelper.sendNotification(getApplicationContext(), channel, notificationId, courseName, action, R.drawable.ic_launcher_foreground);
 
         long addMillis = 0L;
-        if ("MINUTES".equalsIgnoreCase(freqUnit)) {
-            addMillis = TimeUnit.MINUTES.toMillis(freqValue);
-        } else if ("HOURS".equalsIgnoreCase(freqUnit)) {
+        if ("HOURS".equalsIgnoreCase(freqUnit)) {
             addMillis = TimeUnit.HOURS.toMillis(freqValue);
         } else {
             addMillis = TimeUnit.DAYS.toMillis(freqValue);
         }
 
-        long nextMillis = System.currentTimeMillis() + addMillis;
+        long baseNext = (target != null) ? target.getNextSessionMillis() : System.currentTimeMillis();
+        long nextMillis = baseNext + addMillis;
+        // If for some reason nextMillis is still in the past (missed executions), advance until in future
+        long now = System.currentTimeMillis();
+        while (nextMillis <= now) {
+            nextMillis += addMillis;
+        }
+
+        // Persist updated nextSessionMillis back to preferences
+        if (target != null) {
+            target.setNextSessionMillis(nextMillis);
+            // replace and save list
+            List<Course> newList = courses != null ? courses : new ArrayList<>();
+            for (int i = 0; i < newList.size(); i++) {
+                if (newList.get(i).getId().equals(target.getId())) {
+                    newList.set(i, target);
+                    break;
+                }
+            }
+            prefs.saveCourses(newList);
+        }
 
     Data nextData = new Data.Builder()
                 .putString("course_id", courseId)
