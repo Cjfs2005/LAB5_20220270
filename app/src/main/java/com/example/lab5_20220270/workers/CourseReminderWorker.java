@@ -19,6 +19,25 @@ import com.example.lab5_20220270.model.Course;
 import java.util.List;
 import java.util.ArrayList;
 
+/*
+Modelo: GPT-5 (mediante Github Copilot para brindarle contexto del proyecto)
+Prompt: Eres un programador de aplicaciones Android en Java. Crea un Worker que al ejecutarse:
+ - Envíe una notificación para el curso identificado por `course_id`.
+ - Lea el objeto `Course` persistido (PreferencesManager) y use su `nextSessionMillis` como base.
+ - Calcule la siguiente sesión sumando la frecuencia configurada (solo HOURS o DAYS) a la `nextSessionMillis` almacenada.
+ - Si la siguiente sesión calculada queda en el pasado, avanza en bucle hasta que quede en el futuro.
+ - Persista el nuevo `nextSessionMillis` en la lista de cursos (PreferencesManager.saveCourses).
+ - Encole un OneTimeWorkRequest para la siguiente ejecución con tag igual al courseId.
+ - Use un id de notificación estable derivado del `courseId` para que las notificaciones del mismo curso se reemplacen.
+
+Correcciones: Se tuvo que adaptar el código generado por la IA para:
+ - Añadir y ajustar imports (`PreferencesManager`, `Course`, `ArrayList`, `List`).
+ - Evitar caso extremo de `Integer.MIN_VALUE` al calcular el id de notificación.
+ - Remover soporte a minutos si existía y garantizar que la suma de tiempos use TimeUnit.HOURS/DAYS.
+ - Persistir la lista completa actualizada con `prefs.saveCourses(newList)`.
+ - Asegurar que el cálculo de nextMillis avance si hay ejecuciones perdidas.
+*/
+
 public class CourseReminderWorker extends Worker {
 
     public CourseReminderWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -31,7 +50,6 @@ public class CourseReminderWorker extends Worker {
     Data input = getInputData();
     String courseId = input.getString("course_id");
 
-    // Load persisted course if available to use its stored nextSessionMillis
     PreferencesManager prefs = new PreferencesManager(getApplicationContext());
     List<Course> courses = prefs.getCourses();
     Course target = null;
@@ -62,7 +80,7 @@ public class CourseReminderWorker extends Worker {
         int notificationId;
         if (courseId != null) {
             notificationId = Math.abs(courseId.hashCode());
-            if (notificationId == Integer.MIN_VALUE) notificationId = Math.abs(notificationId + 1); // avoid MIN_VALUE edge
+            if (notificationId == Integer.MIN_VALUE) notificationId = Math.abs(notificationId + 1);
         } else {
             notificationId = (int) (System.currentTimeMillis() & 0x7fffffff);
         }
@@ -78,16 +96,13 @@ public class CourseReminderWorker extends Worker {
 
         long baseNext = (target != null) ? target.getNextSessionMillis() : System.currentTimeMillis();
         long nextMillis = baseNext + addMillis;
-        // If for some reason nextMillis is still in the past (missed executions), advance until in future
         long now = System.currentTimeMillis();
         while (nextMillis <= now) {
             nextMillis += addMillis;
         }
 
-        // Persist updated nextSessionMillis back to preferences
         if (target != null) {
             target.setNextSessionMillis(nextMillis);
-            // replace and save list
             List<Course> newList = courses != null ? courses : new ArrayList<>();
             for (int i = 0; i < newList.size(); i++) {
                 if (newList.get(i).getId().equals(target.getId())) {

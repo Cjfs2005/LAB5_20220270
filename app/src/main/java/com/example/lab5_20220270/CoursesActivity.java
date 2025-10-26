@@ -37,7 +37,6 @@ public class CoursesActivity extends AppCompatActivity {
         adapter = new CoursesAdapter(new ArrayList<>(), new CoursesAdapter.OnItemActionListener() {
             @Override
             public void onItemClick(Course course) {
-                // TODO: abrir detalle/editar
             }
 
             @Override
@@ -58,7 +57,6 @@ public class CoursesActivity extends AppCompatActivity {
 
         viewModel.getCourses().observe(this, courses -> adapter.setList(courses));
 
-        // Show empty view when list is empty
         viewModel.getCourses().observe(this, courses -> {
             if (courses == null || courses.isEmpty()) {
                 binding.textEmpty.setVisibility(android.view.View.VISIBLE);

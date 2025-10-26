@@ -20,6 +20,25 @@ import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+/*
+Modelo: GPT-5 (mediante Github Copilot para brindarle contexto del proyecto)
+Prompt: Eres un programador de aplicaciones para Android en Java y necesitas implementar la pantalla de creación de cursos. Requisitos:
+ - Usar Material TextInputLayout + TextInputEditText para los campos con label persistente.
+ - Incluir MaterialDatePicker y MaterialTimePicker (separados) para que el usuario seleccione la fecha y hora de la próxima sesión.
+ - Validar que la fecha/hora combinada sea al menos 1 minuto en el futuro.
+ - Eliminar la opción de 'Minutos' en la frecuencia y aceptar sólo 'Horas' o 'Días' con valor entero >= 1.
+ - Al guardar, construir un objeto Course con `nextSessionMillis` igual a la fecha/hora seleccionada, persistir con ViewModel/Preferences y programar el primer recordatorio con CourseScheduler.
+ - Mostrar fecha en formato dd/MM/yyyy y hora HH:mm en los campos.
+
+Correcciones: Se tuvo que ajustar lo generado por la IA para:
+ - Añadir imports de Material pickers y TimeFormat.
+ - Crear variables auxiliares (`selectedDateMillis`, `selectedHour`, `selectedMinute`) y formateadores (`SimpleDateFormat`).
+ - Ajustar los ids de binding y el layout (TextInputLayout/TextInputEditText) para que coincidan con el binding generado.
+ - Asegurar que el valor `nextSessionMillis` se combine correctamente y que la validación permita al menos 1 minuto en el futuro.
+ - Manejar el caso donde el usuario no selecciona fecha/hora mostrando un Toast y bloqueando el guardado.
+ - Comprobar dependencias en `build.gradle` para Material Components.
+*/
+
 public class CourseCreateActivity extends AppCompatActivity {
     private ActivityCreateCourseBinding binding;
     private CoursesViewModel viewModel;
@@ -46,7 +65,6 @@ public class CourseCreateActivity extends AppCompatActivity {
         String[] types = new String[]{"Teórico", "Laboratorio", "Electivo", "Otro"};
         binding.spinnerType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, types));
 
-        // Date picker for next session date
         binding.editTextNextDate.setOnClickListener(v -> {
             MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                     .setTitleText("Seleccione la fecha")
@@ -60,7 +78,6 @@ public class CourseCreateActivity extends AppCompatActivity {
             datePicker.show(getSupportFragmentManager(), "date_picker");
         });
 
-        // Time picker for next session time
         binding.editTextNextTime.setOnClickListener(v -> {
             MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -99,7 +116,6 @@ public class CourseCreateActivity extends AppCompatActivity {
                 return;
             }
 
-            // Combine date and time into a single millis
             Calendar combined = Calendar.getInstance();
             combined.setTimeInMillis(selectedDateMillis);
             combined.set(Calendar.HOUR_OF_DAY, selectedHour);
@@ -109,7 +125,7 @@ public class CourseCreateActivity extends AppCompatActivity {
             long nextMillis = combined.getTimeInMillis();
 
             long now = System.currentTimeMillis();
-            if (nextMillis < now + 60_000L) { // allow starting from next minute
+            if (nextMillis < now + 60_000L) {
                 Toast.makeText(this, "La fecha/hora debe ser al menos 1 minuto en el futuro", Toast.LENGTH_SHORT).show();
                 return;
             }

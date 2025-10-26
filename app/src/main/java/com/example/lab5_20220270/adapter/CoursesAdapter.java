@@ -16,6 +16,22 @@ import java.util.Locale;
 import java.util.List;
 
 public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.CourseViewHolder> {
+
+/*
+Modelo: GPT-5 (mediante Github Copilot para brindarle contexto del proyecto)
+Prompt: Eres un programador Android en Java. Implementa un Adapter llamado para un RecyclerView que muestre una lista de `Course` con las siguientes reglas:
+ - Mostrar el nombre del curso y su tipo.
+ - Mostrar la próxima sesión con el texto exacto: "Próxima sesión: dd/MM/yyyy HH:mm" usando el formato `dd/MM/yyyy HH:mm`.
+ - Mostrar la frecuencia con el texto exacto: "Frecuencia: Cada X horas" o "Frecuencia: Cada X días" según la unidad almacenada en el `Course`.
+ - Incluir un botón de eliminar a la derecha que invoque `onItemDelete(Course)` en un listener pasado al Adapter, y mantener `onItemClick(Course)` para clicks en el item.
+ - Mantener un método `setList(List<Course>)` para actualizar datos y refrescar la vista.
+
+Correcciones: Al integrar el código generado fue necesario:
+ - Importar y usar `SimpleDateFormat` y `Locale.getDefault()` para formateo consistente.
+ - Asegurarse de que `Course.getNextSessionMillis()` devuelve un `long` y formatearlo.
+ - Vincular correctamente los ids de la vista (`textCourseName`, `textCourseType`, `textNextSession`, `textFrequency`, `btnDelete`) con el ViewHolder.
+ - Mantener las cadenas de UI si se desea internacionalizar posteriormente en `strings.xml`.
+*/
     private List<Course> list;
     private final OnItemActionListener listener;
 
