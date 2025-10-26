@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center_horizontal">
 
         <TextView
             android:id="@+id/textGreeting"
@@ -19,14 +20,16 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="¡Hola Christian!" />
+            android:text="¡Hola Christian!"
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/textMotivation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Hoy es un gran día para aprender" />
+            android:text="Hoy es un gran día para aprender"
+            android:textAlignment="center" />
 
         <ImageView
             android:id="@+id/imageProfile"
@@ -34,7 +37,9 @@
             android:layout_height="120dp"
             android:layout_marginTop="12dp"
             android:src="@mipmap/ic_launcher"
-            android:contentDescription="Imagen de perfil" />
+            android:contentDescription="Imagen de perfil"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
 
         <Button
             android:id="@+id/buttonViewCourses"
