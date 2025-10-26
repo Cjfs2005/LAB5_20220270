@@ -50,10 +50,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.CourseVi
         String next = "Próx: " + DateFormat.getDateTimeInstance().format(c.getNextSessionMillis());
         holder.textNextSession.setText(next);
         holder.itemView.setOnClickListener(v -> listener.onItemClick(c));
-        holder.itemView.setOnLongClickListener(v -> {
-            listener.onItemDelete(c);
-            return true;
-        });
+        holder.btnDelete.setOnClickListener(v -> listener.onItemDelete(c));
     }
 
     @Override
@@ -66,6 +63,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.CourseVi
         TextView textCourseType;
         TextView textNextSession;
         TextView textFrequency;
+        android.widget.ImageButton btnDelete;
 
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,6 +71,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.CourseVi
             textCourseType = itemView.findViewById(R.id.textCourseType);
             textNextSession = itemView.findViewById(R.id.textNextSession);
             textFrequency = itemView.findViewById(R.id.textFrequency);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }
