@@ -36,6 +36,12 @@ public class CoursesViewModel extends AndroidViewModel {
         courses.setValue(list);
         preferencesManager.saveCourses(list);
     }
+    
+    public void reloadCourses() {
+        List<Course> loaded = preferencesManager.getCourses();
+        if (loaded == null) loaded = new ArrayList<>();
+        courses.setValue(loaded);
+    }
 
     public void updateCourse(Course c) {
         List<Course> list = courses.getValue();

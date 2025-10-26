@@ -40,7 +40,6 @@ public class CourseReminderWorker extends Worker {
         else if ("Electivo".equalsIgnoreCase(type)) channel = NotificationHelper.CHANNEL_ELECTIVE;
         else if ("Otro".equalsIgnoreCase(type)) channel = NotificationHelper.CHANNEL_OTHER;
 
-        // Use a stable notification id per course so each new reminder replaces the previous one
         int notificationId;
         if (courseId != null) {
             notificationId = Math.abs(courseId.hashCode());
