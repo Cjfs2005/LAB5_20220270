@@ -1,39 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-        <EditText
-            android:id="@+id/editTextUserName"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <EditText
-            android:id="@+id/editTextMotivation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Mensaje motivacional" />
+            <EditText
+                android:id="@+id/editTextUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre" />
 
-        <EditText
-            android:id="@+id/editTextMotivationInterval"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="Intervalo (horas)" />
+            <EditText
+                android:id="@+id/editTextMotivation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mensaje motivacional" />
 
-        <Button
-            android:id="@+id/buttonSaveSettings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar" />
+            <EditText
+                android:id="@+id/editTextMotivationInterval"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="Intervalo (horas)" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/buttonSaveSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Guardar" />
 
-</ScrollView>
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

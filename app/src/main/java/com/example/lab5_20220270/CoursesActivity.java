@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import android.view.MenuItem;
 
 import com.example.lab5_20220270.adapter.CoursesAdapter;
 import com.example.lab5_20220270.databinding.ActivityCoursesBinding;
@@ -24,6 +25,12 @@ public class CoursesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityCoursesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Mis cursos");
+        }
 
         viewModel = new ViewModelProvider(this).get(CoursesViewModel.class);
 
@@ -55,5 +62,14 @@ public class CoursesActivity extends AppCompatActivity {
             Intent i = new Intent(CoursesActivity.this, CourseCreateActivity.class);
             startActivity(i);
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

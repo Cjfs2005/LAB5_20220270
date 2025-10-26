@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.example.lab5_20220270.databinding.ActivitySettingsBinding;
 import com.example.lab5_20220270.storage.PreferencesManager;
@@ -20,6 +21,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         prefs = new PreferencesManager(this);
 
+        setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Configuración");
+        }
+
         binding.editTextUserName.setText(prefs.getUserName());
         binding.editTextMotivation.setText(prefs.getMotivationMessage());
         binding.editTextMotivationInterval.setText(String.valueOf(prefs.getMotivationIntervalHours()));
@@ -32,5 +39,14 @@ public class SettingsActivity extends AppCompatActivity {
             Toast.makeText(this, "Configuración guardada", Toast.LENGTH_SHORT).show();
             finish();
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

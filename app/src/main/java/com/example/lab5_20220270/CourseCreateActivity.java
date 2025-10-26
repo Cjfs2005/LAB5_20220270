@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import android.view.MenuItem;
 
 import com.example.lab5_20220270.databinding.ActivityCreateCourseBinding;
 import com.example.lab5_20220270.model.Course;
@@ -24,6 +25,12 @@ public class CourseCreateActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(CoursesViewModel.class);
+
+        setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Crear curso");
+        }
 
         String[] types = new String[]{"Teórico", "Laboratorio", "Electivo", "Otro"};
         binding.spinnerType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, types));
@@ -44,5 +51,14 @@ public class CourseCreateActivity extends AppCompatActivity {
             com.example.lab5_20220270.scheduler.CourseScheduler.scheduleCourseReminder(this, c);
             finish();
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
